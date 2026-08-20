@@ -1,0 +1,22 @@
+# Secrets — never commit these
+.env
+
+# Virtual environment
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Data (kept local, not versioned)
+data/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS / editor cruft
+.DS_Store
+.vscode/
+.idea/

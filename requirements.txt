@@ -1,0 +1,10 @@
+# GridForecast — dependencies (ingestion phase)
+# Kept minimal on purpose. Add modeling / MLOps / dashboard
+# libraries at their milestones, not up front.
+# Once things work, pin exact versions with: pip freeze > requirements.txt
+
+entsoe-py        # Client for the ENTSO-E Transparency Platform API
+pandas           # Data handling
+pyarrow          # Parquet read/write for versioned storage
+python-dotenv    # Load the API token from a local .env file
+requests         # HTTP (used by the ENTSO-E client)
