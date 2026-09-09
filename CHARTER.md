@@ -1,4 +1,6 @@
-# Project Charter — Plataforma de Forecasting Probabilístico del Sistema Eléctrico
+# GridForecast — Project Charter
+
+### Plataforma de Forecasting Probabilístico del Sistema Eléctrico
 
 > **Fuente única de verdad:** este repositorio. Si una decisión importante no está aquí, en una Issue o en un PR, no existe.
 
@@ -39,10 +41,11 @@ Cada rol tiene un dueño; el sombrero de **revisor rota cada sprint** para que t
 
 | Rol | Dueño | Responsabilidad principal |
 |-----|-------|---------------------------|
-| **Data & Infra** | _(por asignar)_ | Ingesta en vivo, almacenamiento, nube y **dueño del presupuesto** |
-| **Modeling** | _(por asignar)_ | Forecasting probabilístico, incertidumbre, calibración |
-| **MLOps & Monitoring** | _(por asignar)_ | Despliegue, drift detection, reentrenamiento, CI/CD |
-| **Product & GenAI** | _(por asignar)_ | Dashboard, capa LLM de reportes, documentación, narrativa |
+| **Data & Infra + Modeling** | Jalil | Ingesta en vivo, almacenamiento, nube, **dueño del presupuesto** + forecasting probabilístico, incertidumbre y calibración |
+| **MLOps & Monitoring** | Eliseo | Despliegue, drift detection, reentrenamiento, CI/CD; co-revisor del modelado |
+| **Product & GenAI** | David | Dashboard, evaluación/backtesting visible, documentación, narrativa + capa LLM (objetivo ambicioso) |
+
+> **Nota (equipo de 3).** Willy dejó el proyecto, así que el rol de Modeling se absorbe. Jalil lo asume junto con Infra: la carga es manejable porque ingesta y modelado ocurren **en secuencia, no en paralelo** (primero el pipeline, luego los modelos). El monitoreo de deriva y calibración es estadísticamente vecino del modelado, así que Eliseo es el co-revisor natural de esa parte. La capa LLM pasa a ser un **objetivo ambicioso**, no un requisito: si el tiempo aprieta, se recorta sin dañar el proyecto.
 
 ## 5. Metodología
 
