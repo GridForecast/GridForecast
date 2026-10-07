@@ -1,0 +1,4 @@
+# Limpia las salidas de los notebooks antes de cada commit (requiere nbstripout).
+# Cada integrante debe ejecutar una vez tras clonar:  nbstripout --install
+*.ipynb filter=nbstripout
+*.ipynb diff=ipynb
