@@ -2,10 +2,17 @@
 Ingesta de datos de ENTSO-E para GridForecast.
 
 Descarga, para un pais y una ventana de tiempo, tres familias de datos
-de la ENTSO-E Transparency Platform y las guarda en data/ como Parquet:
-  - Demanda real (actual total load)
-  - Generacion por tipo de tecnologia
-  - Pronostico de eolica y solar
+de la ENTSO-E Transparency Platform y las guarda como Parquet en una
+capa "raw" (bronze) estilo arquitectura medallion:
+
+    data/raw/<pais>/<tipo>/<tipo>_<inicio>_<fin>.parquet
+
+  - Demanda real (actual total load)        -> tipo "load"
+  - Generacion por tipo de tecnologia       -> tipo "generation"
+  - Pronostico de eolica y solar            -> tipo "wind_solar_forecast"
+
+Esta capa guarda los datos crudos tal como llegan de la fuente; la
+limpieza y el modelado se haran despues sobre capas posteriores.
 
 Uso:
     python src/ingest.py
@@ -26,7 +33,7 @@ from entsoe import EntsoePandasClient
 COUNTRY_CODE = "ES"           # Espana
 TIMEZONE = "Europe/Madrid"    # zona horaria del mercado electrico espanol
 DAYS_BACK = 7                 # cuantos dias hacia atras descargar
-OUTPUT_DIR = Path("data")
+RAW_DIR = Path("data/raw")    # capa raw (bronze) de la arquitectura medallion
 
 
 def get_client() -> EntsoePandasClient:
@@ -48,8 +55,12 @@ def date_range():
     return start, end
 
 
-def save(df: pd.DataFrame, filename: str) -> Path:
-    """Guarda un DataFrame en data/ como Parquet.
+def save(df: pd.DataFrame, data_type: str, start, end) -> Path:
+    """Guarda un DataFrame en la capa raw como Parquet.
+
+    Ruta: data/raw/<pais>/<tipo>/<tipo>_<inicio>_<fin>.parquet
+    Incluir el rango de fechas en el nombre evita sobrescribir descargas
+    anteriores y deja trazabilidad de que periodo cubre cada archivo.
 
     Parquet necesita nombres de columna de tipo texto. La generacion por
     tecnologia llega con columnas de varios niveles (MultiIndex), asi que
@@ -62,8 +73,10 @@ def save(df: pd.DataFrame, filename: str) -> Path:
     else:
         df.columns = [str(c) for c in df.columns]
 
-    OUTPUT_DIR.mkdir(exist_ok=True)
-    path = OUTPUT_DIR / filename
+    out_dir = RAW_DIR / COUNTRY_CODE.lower() / data_type
+    out_dir.mkdir(parents=True, exist_ok=True)
+    filename = f"{data_type}_{start.date()}_{end.date()}.parquet"
+    path = out_dir / filename
     df.to_parquet(path)
     return path
 
@@ -95,22 +108,20 @@ def main() -> None:
     start, end = date_range()
     print(f"Pais: {COUNTRY_CODE} | Ventana: {start.date()} -> {end.date()}\n")
 
-    # (etiqueta, funcion, nombre del archivo de salida)
+    # (etiqueta, funcion, tipo de dato para la ruta de salida)
     jobs = [
-        ("demanda", fetch_load,
-         f"{COUNTRY_CODE.lower()}_load_ultimos_{DAYS_BACK}d.parquet"),
-        ("generacion por tecnologia", fetch_generation,
-         f"{COUNTRY_CODE.lower()}_generation_ultimos_{DAYS_BACK}d.parquet"),
-        ("pronostico eolico/solar", fetch_wind_solar_forecast,
-         f"{COUNTRY_CODE.lower()}_wind_solar_forecast_ultimos_{DAYS_BACK}d.parquet"),
+        ("demanda", fetch_load, "load"),
+        ("generacion por tecnologia", fetch_generation, "generation"),
+        ("pronostico eolico/solar", fetch_wind_solar_forecast, "wind_solar_forecast"),
     ]
 
-    for label, fn, filename in jobs:
+    for label, fn, data_type in jobs:
         print(f"Descargando {label} ...")
         try:
             df = fn(client, start, end)
-            path = save(df, filename)
-            print(f"  OK  {len(df)} registros, {df.shape[1]} columna(s)  ->  {path.name}")
+            path = save(df, data_type, start, end)
+            rel = path.relative_to(RAW_DIR.parent)
+            print(f"  OK  {len(df)} registros, {df.shape[1]} columna(s)  ->  {rel}")
         except Exception as e:
             # Si una familia falla, seguimos con las demas en vez de abortar todo.
             print(f"  ERROR al descargar {label}: {e}")
