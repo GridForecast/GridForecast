@@ -1,0 +1,6 @@
+# GridForecast — herramientas de desarrollo (NO de produccion).
+# Instalar con:  pip install -r requirements-dev.txt
+# Luego, una vez por clon:  nbstripout --install
+
+jupyterlab      # ejecutar y explorar notebooks
+nbstripout      # evita que los notebooks guarden salidas (datos/tokens) en git
