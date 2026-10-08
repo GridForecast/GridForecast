@@ -1,127 +1,127 @@
 # GridForecast — Project Charter
 
-### Plataforma de Forecasting Probabilístico del Sistema Eléctrico
+### Probabilistic Forecasting Platform for the Electricity System
 
-> **Fuente única de verdad:** este repositorio. Si una decisión importante no está aquí, en una Issue o en un PR, no existe.
+> **Single source of truth:** this repository. If an important decision isn't here, in an Issue, or in a PR, it doesn't exist.
 
 ---
 
-## 1. Visión
+## 1. Vision
 
-Construir un **sistema de forecasting en producción** que prediga demanda eléctrica y generación renovable en tiempo real, con incertidumbre bien calibrada, monitoreo de deriva y reentrenamiento automático, más una capa de reportes en lenguaje natural.
+Build a **production forecasting system** that predicts electricity demand and renewable generation in real time, with well-calibrated uncertainty, drift monitoring, and automatic retraining, plus a natural-language reporting layer.
 
-El objetivo **no** es investigación académica ni un notebook aislado, sino un sistema que corre, que cualquiera puede abrir en una URL, y que demuestra el ciclo completo de un data scientist moderno.
+The goal is **not** academic research or an isolated notebook, but a running system that anyone can open at a URL and that demonstrates the full lifecycle of a modern data scientist.
 
-## 2. Objetivo real
+## 2. Real objective
 
-Empleabilidad y portafolio. El éxito se mide por lo que un reclutador o hiring manager puede ver funcionando y verificar, no por métricas de precisión en un vacío. El diferenciador es la **ingeniería y operación alrededor del modelo**, no el modelo en sí.
+Employability and portfolio. Success is measured by what a recruiter or hiring manager can see running and verify, not by accuracy metrics in a vacuum. The differentiator is the **engineering and operation around the model**, not the model itself.
 
-Al terminar, cada integrante debe poder mostrar: un pipeline de datos en vivo, un modelo probabilístico calibrado, despliegue y monitoreo, tests y CI/CD, integración de LLM con propósito, y un dashboard público.
+By the end, each member should be able to show: a live data pipeline, a calibrated probabilistic model, deployment and monitoring, tests and CI/CD, purposeful LLM integration, and a public dashboard.
 
-## 3. Alcance
+## 3. Scope
 
-**Dentro:**
-- Ingesta en vivo de datos de red (ENTSO-E u operador público) + meteorología abierta.
-- Almacenamiento versionado en Parquet.
-- Forecasting probabilístico con cuantificación de incertidumbre (conformal prediction / intervalos calibrados).
-- Backtesting y validación out-of-sample honesta.
-- Despliegue del modelo + dashboard.
-- Monitoreo de data drift y calibración; reentrenamiento programado.
-- Capa LLM que traduce el forecast a un reporte legible.
+**In:**
+- Live ingestion of grid data (ENTSO-E or a public operator) + open weather data.
+- Versioned storage in Parquet.
+- Probabilistic forecasting with uncertainty quantification (conformal prediction / calibrated intervals).
+- Backtesting and honest out-of-sample validation.
+- Model deployment + dashboard.
+- Data drift and calibration monitoring; scheduled retraining.
+- LLM layer that turns the forecast into a readable report.
 
-**Fuera (por ahora):**
-- Trading o recomendaciones de inversión.
-- Bases de datos gestionadas caras.
-- GPUs y tiers premium sin milestone que lo justifique.
-- Cualquier recurso cloud always-on ocioso.
+**Out (for now):**
+- Trading or investment recommendations.
+- Expensive managed databases.
+- GPUs and premium tiers without a milestone that justifies them.
+- Any idle always-on cloud resource.
 
-## 4. Equipo y roles
+## 4. Team and roles
 
-Cada rol tiene un dueño; el sombrero de **revisor rota cada sprint** para que todos toquen todo.
+Each role has an owner; the **reviewer hat rotates every sprint** so everyone touches everything.
 
-| Rol | Dueño | Responsabilidad principal |
-|-----|-------|---------------------------|
-| **Data & Infra + Modeling** | Jalil | Ingesta en vivo, almacenamiento, nube, **dueño del presupuesto** + forecasting probabilístico, incertidumbre y calibración |
-| **MLOps & Monitoring** | Eliseo | Despliegue, drift detection, reentrenamiento, CI/CD; co-revisor del modelado |
-| **Product & GenAI** | David | Dashboard, evaluación/backtesting visible, documentación, narrativa + capa LLM (objetivo ambicioso) |
+| Role | Owner | Main responsibility |
+|------|-------|---------------------|
+| **Data & Infra + Modeling** | Jalil | Live ingestion, storage, cloud, **budget owner** + probabilistic forecasting, uncertainty, and calibration |
+| **MLOps & Monitoring** | Eliseo | Deployment, drift detection, retraining, CI/CD; co-reviewer of the modeling |
+| **Product & GenAI** | David | Dashboard, visible evaluation/backtesting, documentation, narrative + LLM layer (stretch goal) |
 
-> **Nota (equipo de 3).** Willy dejó el proyecto, así que el rol de Modeling se absorbe. Jalil lo asume junto con Infra: la carga es manejable porque ingesta y modelado ocurren **en secuencia, no en paralelo** (primero el pipeline, luego los modelos). El monitoreo de deriva y calibración es estadísticamente vecino del modelado, así que Eliseo es el co-revisor natural de esa parte. La capa LLM pasa a ser un **objetivo ambicioso**, no un requisito: si el tiempo aprieta, se recorta sin dañar el proyecto.
+> **Note (team of 3).** Willy left the project, so the Modeling role is absorbed. Jalil takes it on alongside Infra: the load is manageable because ingestion and modeling happen **in sequence, not in parallel** (pipeline first, then models). Drift and calibration monitoring is statistically adjacent to modeling, so Eliseo is the natural co-reviewer for that part. The LLM layer becomes a **stretch goal**, not a requirement: if time gets tight, it can be cut without harming the project.
 
-## 5. Metodología
+## 5. Methodology
 
-**Kanban con sprints de 2 semanas, todo anclado a GitHub.**
+**Kanban with 2-week sprints, everything anchored to GitHub.**
 
-- Cada tarea (feature, modelo, bug) es una **Issue**.
-- Tablero de columnas: `Backlog → En progreso → En revisión → Hecho`.
-- Cada tarea sale en una **rama propia** → **Pull Request** → **revisión obligatoria de un compañero** → merge.
-- **Nadie** hace push directo a `main`.
-- Demo quincenal al cerrar el sprint.
+- Every task (feature, model, bug) is an **Issue**.
+- Board columns: `Backlog → In progress → In review → Done`.
+- Every task goes on its **own branch** → **Pull Request** → **mandatory peer review** → merge.
+- **Nobody** pushes directly to `main`.
+- Biweekly demo at the end of each sprint.
 
-**Ritmos:**
-- **Standup asíncrono diario** en el chat (3 líneas: qué hice, qué haré, qué me bloquea).
-- **Sync semanal** de 30 min: repaso del tablero + captura de costos cloud.
-- **Retro** al final de cada sprint (qué funcionó, qué no, un ajuste).
+**Cadence:**
+- **Daily async standup** in chat (3 lines: what I did, what I'll do, what's blocking me).
+- **Weekly 30-min sync**: board review + cloud cost snapshot.
+- **Retro** at the end of each sprint (what worked, what didn't, one adjustment).
 
-## 6. Stack de herramientas
+## 6. Tooling stack
 
-| Necesidad | Herramienta | Costo | Cuándo se adopta |
-|-----------|-------------|-------|------------------|
-| Código, tareas, docs | **GitHub** (repo + Projects + Wiki) | Gratis | Semana 0 |
-| Comunicación | **Discord / Slack** (asíncrono por defecto) | Gratis | Semana 0 |
-| Videollamada | **Google Meet / Discord** | Gratis | Semana 0 |
-| Experiment tracking | **MLflow** (local/autoalojado) | Gratis | Semana ~4 |
-| Dashboard | **Streamlit** | Gratis local | Cuando haya algo que mostrar |
-| Nube | **Azure** (serverless, scale-to-zero) | ~5–20 USD/mes austero | Fase de despliegue |
+| Need | Tool | Cost | When adopted |
+|------|------|------|--------------|
+| Code, tasks, docs | **GitHub** (repo + Projects + Wiki) | Free | Week 0 |
+| Communication | **Discord / Slack** (async by default) | Free | Week 0 |
+| Video call | **Google Meet / Discord** | Free | Week 0 |
+| Experiment tracking | **MLflow** (local/self-hosted) | Free | Week ~4 |
+| Dashboard | **Streamlit** | Free locally | When there's something to show |
+| Cloud | **Azure** (serverless, scale-to-zero) | ~5–20 USD/mo austere | Deployment phase |
 
-> **Regla:** no adoptar una herramienta hasta necesitarla de verdad. Se arranca solo con GitHub y el chat.
+> **Rule:** don't adopt a tool until you actually need it. Start with just GitHub and chat.
 
 ## 7. Definition of Done
 
-Una tarea está *hecha* solo si cumple **todo**:
+A task is *done* only if it meets **all** of:
 
-- [ ] Código/notebook reproducible desde cero.
-- [ ] Chequeo out-of-sample donde aplique.
-- [ ] Revisión de código aprobada por un compañero.
-- [ ] Entrada en la documentación.
-- [ ] **Cost gate**: si crea un recurso cloud, se verificó el precio en la calculadora de Azure *antes* de crearlo.
+- [ ] Code/notebook reproducible from scratch.
+- [ ] Out-of-sample check where applicable.
+- [ ] Code review approved by a teammate.
+- [ ] Documentation entry.
+- [ ] **Cost gate**: if it creates a cloud resource, the price was checked in the Azure calculator *before* creating it.
 
-## 8. Control de costos (blindaje anti-sorpresas)
+## 8. Cost control (surprise-proofing)
 
-- **Azure Budgets con alertas al 50 / 80 / 100 %** — protección número uno.
-- Suscripción con crédito de estudiante y límite de gasto activado.
-- Todo serverless / scale-to-zero; auto-shutdown en cualquier VM.
-- Un solo resource group, todo etiquetado.
-- Revisión de costos de 5 min en cada sync semanal.
+- **Azure Budgets with alerts at 50 / 80 / 100 %** — protection number one.
+- Student-credit subscription with the spending limit enabled.
+- Everything serverless / scale-to-zero; auto-shutdown on any VM.
+- A single resource group, everything tagged.
+- 5-minute cost review at each weekly sync.
 
-**Estimado:** ~5–20 USD/mes en modo austero; probablemente **0 USD** los primeros meses con Azure for Students (100 USD de crédito) + GitHub Student Pack.
+**Estimate:** ~5–20 USD/mo in austere mode; probably **0 USD** for the first months with Azure for Students (100 USD credit) + GitHub Student Pack.
 
-## 9. Calendario (~14 semanas)
+## 9. Timeline (~14 weeks)
 
-| Fase | Semanas | Entregable |
-|------|---------|------------|
-| Setup | 0 | Repo, roles, presupuesto con alertas, fuente de datos elegida |
-| Ingesta | 1–3 | Datos limpios fluyendo (local/serverless) |
-| Modelado | 4–7 | Forecasting probabilístico + evaluación rigurosa |
-| Monitoreo | 8–10 | Drift detection + reentrenamiento |
-| Despliegue | 11–13 | Dashboard + backtesting con validación honesta |
-| Cierre | 14+ | Documentación, writeup de portafolio, capa LLM |
+| Phase | Weeks | Deliverable |
+|-------|-------|-------------|
+| Setup | 0 | Repo, roles, budget with alerts, data source chosen |
+| Ingestion | 1–3 | Clean data flowing (local/serverless) |
+| Modeling | 4–7 | Probabilistic forecasting + rigorous evaluation |
+| Monitoring | 8–10 | Drift detection + retraining |
+| Deployment | 11–13 | Dashboard + backtesting with honest validation |
+| Wrap-up | 14+ | Documentation, portfolio write-up, LLM layer |
 
-## 10. Backlog del Sprint 0 (setup)
+## 10. Sprint 0 backlog (setup)
 
-Convertir cada punto en una Issue y asignarla:
+Turn each item into an Issue and assign it:
 
-1. Crear la organización/repo en GitHub e invitar a los cuatro.
-2. Configurar branch protection en `main` (PR + 1 review obligatorio).
-3. Crear el tablero en GitHub Projects con las cuatro columnas.
-4. Montar el servidor de Discord/Slack y conectar notificaciones de GitHub.
-5. Asignar los cuatro roles (usar el diagnóstico de skills del equipo).
-6. Crear la suscripción de Azure for Students y configurar Budgets + alertas.
-7. Investigar y decidir la fuente de datos de red (ENTSO-E vs operador local).
-8. Escribir el `README.md` con setup del entorno (Python, dependencias).
+1. Create the GitHub organization/repo and invite the four members.
+2. Configure branch protection on `main` (PR + 1 mandatory review).
+3. Create the board in GitHub Projects with the four columns.
+4. Set up the Discord/Slack server and connect GitHub notifications.
+5. Assign the four roles (use the team's skills assessment).
+6. Create the Azure for Students subscription and configure Budgets + alerts.
+7. Research and decide the grid data source (ENTSO-E vs local operator).
+8. Write the `README.md` with environment setup (Python, dependencies).
 
-## 11. Normas de trabajo
+## 11. Working norms
 
-- **Asíncrono por defecto.** El chat es para desbloquear rápido; las decisiones van a GitHub.
-- **Revisar el código del otro es aprender**, no vigilar.
-- Ninguna herramienta nueva sin necesidad real.
-- El encuadre del proyecto es **investigación y educación**, nunca recomendación de inversión.
+- **Async by default.** Chat is for quick unblocking; decisions go to GitHub.
+- **Reviewing each other's code is learning**, not policing.
+- No new tool without a real need.
+- The project's framing is **research and education**, never investment advice.
