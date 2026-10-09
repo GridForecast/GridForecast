@@ -26,7 +26,7 @@ import os
 from pathlib import Path
 
 import pandas as pd
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
 from entsoe import EntsoePandasClient
 
 # --- Configuration ---
@@ -122,8 +122,8 @@ def main() -> None:
             path = save(df, data_type, start, end)
             rel = path.relative_to(RAW_DIR.parent)
             print(f"  OK  {len(df)} rows, {df.shape[1]} column(s)  ->  {rel}")
-        except Exception as e:
-            # If one family fails, continue with the others instead of aborting.
+        except Exception as e:  # noqa: BLE001
+            # Intentionally catch failures per job so other downloads can continue.
             print(f"  ERROR downloading {label}: {e}")
 
     print("\nIngestion complete.")

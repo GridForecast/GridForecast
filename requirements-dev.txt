@@ -5,3 +5,5 @@
 jupyterlab      # run and explore notebooks
 nbstripout      # prevents notebooks from committing outputs (data/tokens) to git
 matplotlib      # plotting for exploratory analysis (EDA notebook)
+
+ruff
